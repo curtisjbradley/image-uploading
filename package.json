@@ -10,5 +10,8 @@
   "description": "",
   "workspaces": [
     "packages/*"
-  ]
+  ],
+  "dependencies": {
+    "react-router": "^7.6.2"
+  }
 }
