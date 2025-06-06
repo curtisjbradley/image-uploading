@@ -1,0 +1,38 @@
+### Get all images
+# This is a comment
+GET http://localhost:3000/api/images
+
+### Get images starting with shiba
+GET http://localhost:3000/api/images?name=shiba
+
+### A second example.  Each request must be delimited by a triple hash
+POST http://localhost:3000/api/test
+Content-Type: application/json # Content-Type header is a must if you're sending JSON
+# Request body separated from headers by newline
+
+{ "a": 1, "b": 2 }
+
+### Not found image
+PUT http://localhost:3000/api/test
+Content-Type: application/json
+
+{ "a": 1, "b": 2 }
+
+
+### Bad Body
+PUT http://localhost:3000/api/images/6843376a0dad3dee76bdd70d
+Content-Type: application/json
+
+{ "a": 1, "b": 2 }
+
+### Too Long Name
+PUT http://localhost:3000/api/images/6843376a0dad3dee76bdd70d
+Content-Type: application/json
+
+{ "name":  "ffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffff"}
+
+### Too Long Name
+PUT http://localhost:3000/api/images/6843376a0dad3dee76bdd70d
+Content-Type: application/json
+
+{ "name":  "Shiba"}
