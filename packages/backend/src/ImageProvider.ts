@@ -1,15 +1,14 @@
-import {Collection, MongoClient} from "mongodb";
-import * as process from "node:process";
+import {Collection, MongoClient, ObjectId} from "mongodb";
 
 interface IImageDocument {
-    _id: string;
+    _id: ObjectId;
     src: string;
     name: string;
     authorId: string;
 }
 
 interface IUserDocument {
-    _id: string;
+    _id: ObjectId;
     username: string;
     email: string;
 }
@@ -47,6 +46,7 @@ export class ImageProvider {
     }
 
     updateImageName(id: string, newName: string) {
-        return this.imageCollection.updateOne({_id: id}, {$set: {name: newName}})
+        console.log("Update image name", id, newName);
+        return this.imageCollection.updateOne({_id: new ObjectId(id)}, {$set: {name: newName}})
     }
 }
