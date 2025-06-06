@@ -5,8 +5,9 @@ import { LoginPage } from "./LoginPage.tsx";
 import {Route, Routes} from "react-router";
 import {MainLayout} from "./MainLayout.tsx";
 import type { IApiImageData } from "csc437-monorepo-backend/src/shared/ApiImageData.ts";
-import {useEffect, useState} from "react";
+import {useEffect, useRef, useState} from "react";
 import {ValidRoutes} from "csc437-monorepo-backend/src/shared/ValidRoutes.ts"
+import {ImageSearchForm} from "./ImageSourceForm.tsx";
 
 
 
@@ -15,6 +16,9 @@ function App() {
     const [imageData, setImageData] = useState<IApiImageData[]>([]);
     const [imageDataLoading, setImageDataLoading] = useState<boolean>(true);
     const [imageDataError, setImageDataError] = useState<boolean>(false);
+    const [searchQuery, setSearchQuery] = useState("");
+
+    const reqId = useRef(0)
 
     useEffect(() => {
         console.log("Fetching image data")
@@ -29,6 +33,35 @@ function App() {
             setImageDataError(false);
             r.json().then(setImageData)
         })    }, []);
+
+
+    function handleImageSearch() {
+        reqId.current = reqId.current + 1;
+        const id = reqId.current;
+        setImageDataLoading(true);
+        fetch(`/api/images?name=${searchQuery}`).then(r => {
+            if (!r.ok) {
+                setImageDataError(true);
+                return;
+            }
+            r.json().then((data) => {
+                if (id === reqId.current) {
+                    setImageData(data)
+
+                }
+            })
+        }).then(() => {
+            setImageDataError(false)
+        }
+        ).catch(() => {
+            setImageDataError(true)
+        }).finally(() => {
+            setImageDataLoading(false);
+        })
+
+    }
+    const searchPanel = <ImageSearchForm searchString={searchQuery} onSearchStringChange={setSearchQuery} onSearchRequested={handleImageSearch}/>
+
     function updateImageName(id: string, newName: string) {
         const image = imageData.find(i => i.id === id)
         const newImageData = imageData.slice();
@@ -38,10 +71,12 @@ function App() {
         }
         setImageData(newImageData)
     }
+
+
     return (
         <Routes>
             <Route path={ValidRoutes.HOME} element={<MainLayout />}>
-                <Route index element={<AllImages imageData={imageData} imageDataLoading={imageDataLoading} imageDataError={imageDataError}/>}  />
+                <Route index element={<AllImages imageData={imageData} imageDataLoading={imageDataLoading} imageDataError={imageDataError} searchPanel={searchPanel}/>} />
                 <Route path={ValidRoutes.IMAGES} element={<ImageDetails imageData={imageData} imageDataLoading={imageDataLoading} imageDataError={imageDataError} updateImageName={updateImageName}/>} />
                 <Route path={ValidRoutes.UPLOAD} element={<UploadPage />} />
                 <Route path={ValidRoutes.LOGIN} element={<LoginPage />} />
