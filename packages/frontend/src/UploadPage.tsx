@@ -27,6 +27,8 @@ export function UploadPage(props: IUploadProps) {
                     return "Not logged in"
                 case 403:
                     return "No permissions"
+                case 413:
+                    return "File is too big :("
             }
             props.requeryDB()
             return ""
