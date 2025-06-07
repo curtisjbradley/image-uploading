@@ -1,6 +1,7 @@
 import express, {Request, Response} from "express";
 import {ObjectId} from "mongodb";
 import {ImageProvider} from "../providers/ImageProvider";
+import {handleImageFileErrors, imageMiddlewareFactory} from "../imageUploadMiddleware";
 
 const MAX_NAME_LENGTH = 100
 
@@ -64,6 +65,31 @@ export function registerImageRoutes(app: express.Application, imageProvider: Ima
         })
 
     })
+
+
+    app.post("/api/upload", imageMiddlewareFactory.single("image"), handleImageFileErrors,
+        async (req: Request, res: Response) => {
+            if (!req.file){
+                res.status(400).send("Missing a file")
+                return
+            }
+            if(!req.body?.name) {
+                res.status(400).send("Missing file name")
+                return
+            }
+            if(!req.user) {
+                res.status(403).send("Unauthorized");
+                return;
+            }
+
+            await imageProvider.uploadImage("\\" + req.file.path, req.body.name, req.user.username).then(() => {
+                res.status(201).send()
+            }).catch(err => {
+                res.status(500).send(err.message);
+            })
+            res.status(500).end()
+        }
+    );
 
     function waitRandom(): Promise<void> {
         return new Promise(resolve => setTimeout(resolve, Math.random()*5000));

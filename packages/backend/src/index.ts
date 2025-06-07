@@ -25,6 +25,11 @@ app.use(express.urlencoded({ extended: true }));
 app.use(express.json());
 
 app.use(express.static(STATIC_DIR));
+const imageDir = process.env.IMAGE_UPLOAD_DIR
+if (!imageDir) {
+    throw new Error("Image directory doesn't exist");
+}
+app.use("/uploads", express.static(imageDir));
 
 app.use("/api/*", verifyAuthToken);
 

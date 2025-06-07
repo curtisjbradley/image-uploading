@@ -12,7 +12,7 @@ export interface IImageDataProps {
 }
 export function ImageDetails(props: Readonly<IImageDataProps>): ReactNode {
     const {imageId} = useParams()
-    const image = props.imageData.find(image => image.id == imageId);
+    const image = props.imageData.find(image => image._id == imageId);
 
 
     if(props.imageDataLoading) {
@@ -28,7 +28,7 @@ export function ImageDetails(props: Readonly<IImageDataProps>): ReactNode {
         <div>
 
             <h2>{image.name}</h2>
-            <p>By {image.author.username}</p>
+            <p>By {image.authorId}</p>
             <img className="ImageDetails-img" src={image.src} alt={image.name}/>
             <ImageNameEditor token={props.token} initialValue={image.name} imageId={imageId || ""}  handleUpdate={props.updateImageName}/>
         </div>

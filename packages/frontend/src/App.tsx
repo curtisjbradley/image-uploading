@@ -23,21 +23,7 @@ function App() {
 
     function updateToken(newToken: string) {
         setToken(newToken)
-        console.log("Fetching image data")
-        setImageDataLoading(true)
-        fetch("/api/images", { headers: {
-                Authorization: `Bearer ${newToken}`}}).then(r => {
-            if (!r.ok) {
-                setImageDataError(true);
-                console.log("Uh oh!");
-                return
-            }
-            setImageDataLoading(false);
-            setImageDataError(false);
-            r.json().then(setImageData)
-            console.log("Set image data")
-        });
-
+        requeryDB(newToken)
     }
 
 
@@ -72,7 +58,7 @@ function App() {
     const searchPanel = <ImageSearchForm searchString={searchQuery} onSearchStringChange={setSearchQuery} onSearchRequested={handleImageSearch}/>
 
     function updateImageName(id: string, newName: string) {
-        const image = imageData.find(i => i.id === id)
+        const image = imageData.find(i => i._id === id)
         const newImageData = imageData.slice();
         if (image) {
             const index = newImageData.indexOf(image)
@@ -81,6 +67,21 @@ function App() {
         setImageData(newImageData)
     }
 
+    function requeryDB(queryToken? : string) {
+        setImageDataLoading(true)
+        fetch("/api/images", { headers: {
+                Authorization: `Bearer ${queryToken ? queryToken : token}`}}).then(r => {
+            if (!r.ok) {
+                setImageDataError(true);
+                console.log("Uh oh!");
+                return
+            }
+            setImageDataLoading(false);
+            setImageDataError(false);
+            r.json().then(setImageData)
+            console.log("Set image data")
+        });    }
+
 
     return (
         <Routes>
@@ -88,7 +89,7 @@ function App() {
                 <Route element={<ProtectedRoute authToken={token}/>} >
                     <Route index element={<AllImages imageData={imageData} imageDataLoading={imageDataLoading} imageDataError={imageDataError} searchPanel={searchPanel}/>} />
                     <Route path={ValidRoutes.IMAGES} element={<ImageDetails token={token} imageData={imageData} imageDataLoading={imageDataLoading} imageDataError={imageDataError} updateImageName={updateImageName}/>} />
-                    <Route path={ValidRoutes.UPLOAD} element={<UploadPage />} />
+                    <Route path={ValidRoutes.UPLOAD} element={<UploadPage token={token} requeryDB={requeryDB} />} />
                 </Route>
                 <Route path={ValidRoutes.LOGIN} element={<LoginPage isRegistering={false} setToken={updateToken}/>} />
                 <Route path={ValidRoutes.REGISTER} element={<LoginPage isRegistering={true} setToken={updateToken}/>} />

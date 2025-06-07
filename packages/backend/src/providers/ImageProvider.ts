@@ -25,24 +25,7 @@ export class ImageProvider {
     }
 
     getAllImages() {
-        return this.imageCollection.aggregate([{$lookup: {
-                from: "users",
-                localField: "authorId",
-                foreignField: "username",
-                as: "authorData"
-            }},
-            {$unwind: "$authorData"}, {$project: {
-                    "src": "$src",
-                    "name": "$name",
-                    "author.id": "$authorData._id",
-                    "author.username": "$authorData.username"
-                }}, {$project: {
-                    _id: 0,
-                    id: {$toString: "$_id"},
-                    src: 1,
-                    name: 1,
-                    author: 1
-                }}]).toArray();
+        return this.imageCollection.find().toArray();
     }
 
     updateImageName(id: string, newName: string) {
@@ -52,5 +35,9 @@ export class ImageProvider {
 
     getOwner(imageId: string) {
         return this.imageCollection.findOne({_id: new ObjectId(imageId)}).then(image => image?.authorId)
+    }
+
+    uploadImage(fileLocation: string, name: string, owner: string) {
+        return this.imageCollection.insertOne({_id: new ObjectId(), src: fileLocation, name: name, authorId: owner})
     }
 }
