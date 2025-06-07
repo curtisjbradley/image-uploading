@@ -18,6 +18,7 @@ const storageEngine = multer.diskStorage({
                 fileExtension = ".png"
                 break;
             case "image/jpg":
+            case "image/jpeg":
                 fileExtension = ".jpeg"
                 break;
             default:

@@ -18,8 +18,14 @@ export function UploadPage(props: IUploadProps) {
 
            const res = await fetch("/api/upload", {method: "POST", body: formData, headers: {
                 "Authorization": `Bearer ${props.token}`
-                }})
+                }}).catch((err) => {
+                    console.log(err);
+                    return -1;
+           })
 
+            if(typeof res == "number"){
+                return "Bad upload data"
+            }
             switch (res.status) {
                 case 400:
                     return "Bad upload data"
