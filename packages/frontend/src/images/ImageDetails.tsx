@@ -8,6 +8,7 @@ export interface IImageDataProps {
     imageDataLoading: boolean;
     imageDataError: boolean;
     updateImageName: (id: string, newName: string) => void;
+    token: string
 }
 export function ImageDetails(props: Readonly<IImageDataProps>): ReactNode {
     const {imageId} = useParams()
@@ -29,7 +30,7 @@ export function ImageDetails(props: Readonly<IImageDataProps>): ReactNode {
             <h2>{image.name}</h2>
             <p>By {image.author.username}</p>
             <img className="ImageDetails-img" src={image.src} alt={image.name}/>
-            <ImageNameEditor initialValue={image.name} imageId={imageId || ""}  handleUpdate={props.updateImageName}/>
+            <ImageNameEditor token={props.token} initialValue={image.name} imageId={imageId || ""}  handleUpdate={props.updateImageName}/>
         </div>
     )
 }

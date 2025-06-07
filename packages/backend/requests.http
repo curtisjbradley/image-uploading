@@ -31,8 +31,33 @@ Content-Type: application/json
 
 { "name":  "ffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffff"}
 
-### Too Long Name
+### Working Rename
 PUT http://localhost:3000/api/images/6843376a0dad3dee76bdd70d
 Content-Type: application/json
+Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VybmFtZSI6ImNodW5reWxvdmVyMjMiLCJpYXQiOjE3NDkyNTQxODcsImV4cCI6MTc0OTM0MDU4N30.vWHiYkvkdJMJRexJ6poaxs4ZE_KwN9U_cVPoDkK0VZM
 
 { "name":  "Shiba"}
+
+
+### Hit the register Route
+POST http://localhost:3000/auth/register
+Content-Type: application/json
+
+{"username":  "chunkylover23", "password":  "password"}
+
+### Login
+POST http://localhost:3000/auth/login
+Content-Type: application/json
+
+{"username":  "chunkylover23", "password":  "password"}
+
+### Bad Password
+POST http://localhost:3000/auth/login
+Content-Type: application/json
+
+{"username":  "newuser", "password":  "bad password"}
+
+### No Body
+POST http://localhost:3000/auth/login
+Content-Type: application/json
+

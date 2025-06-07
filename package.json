@@ -13,6 +13,7 @@
   ],
   "dependencies": {
     "body-parser": "^2.2.0",
+    "jsonwebtoken": "^9.0.2",
     "react-router": "^7.6.2"
   }
 }

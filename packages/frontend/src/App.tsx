@@ -5,9 +5,10 @@ import { LoginPage } from "./LoginPage.tsx";
 import {Route, Routes} from "react-router";
 import {MainLayout} from "./MainLayout.tsx";
 import type { IApiImageData } from "csc437-monorepo-backend/src/shared/ApiImageData.ts";
-import {useEffect, useRef, useState} from "react";
+import {useRef, useState} from "react";
 import {ValidRoutes} from "csc437-monorepo-backend/src/shared/ValidRoutes.ts"
 import {ImageSearchForm} from "./ImageSourceForm.tsx";
+import {ProtectedRoute} from "./ProtectedRoute.tsx";
 
 
 
@@ -17,13 +18,15 @@ function App() {
     const [imageDataLoading, setImageDataLoading] = useState<boolean>(true);
     const [imageDataError, setImageDataError] = useState<boolean>(false);
     const [searchQuery, setSearchQuery] = useState("");
-
+    const [token, setToken] = useState<string>("")
     const reqId = useRef(0)
 
-    useEffect(() => {
+    function updateToken(newToken: string) {
+        setToken(newToken)
         console.log("Fetching image data")
         setImageDataLoading(true)
-        fetch("/api/images").then(r => {
+        fetch("/api/images", { headers: {
+                Authorization: `Bearer ${newToken}`}}).then(r => {
             if (!r.ok) {
                 setImageDataError(true);
                 console.log("Uh oh!");
@@ -32,14 +35,20 @@ function App() {
             setImageDataLoading(false);
             setImageDataError(false);
             r.json().then(setImageData)
-        })    }, []);
+            console.log("Set image data")
+        });
+
+    }
 
 
     function handleImageSearch() {
         reqId.current = reqId.current + 1;
         const id = reqId.current;
         setImageDataLoading(true);
-        fetch(`/api/images?name=${searchQuery}`).then(r => {
+        setImageDataError(false)
+        fetch(`/api/images?name=${searchQuery}`, {headers: {
+            "Authorization": `Bearer ${token}`
+            }}).then(r => {
             if (!r.ok) {
                 setImageDataError(true);
                 return;
@@ -76,10 +85,13 @@ function App() {
     return (
         <Routes>
             <Route path={ValidRoutes.HOME} element={<MainLayout />}>
-                <Route index element={<AllImages imageData={imageData} imageDataLoading={imageDataLoading} imageDataError={imageDataError} searchPanel={searchPanel}/>} />
-                <Route path={ValidRoutes.IMAGES} element={<ImageDetails imageData={imageData} imageDataLoading={imageDataLoading} imageDataError={imageDataError} updateImageName={updateImageName}/>} />
-                <Route path={ValidRoutes.UPLOAD} element={<UploadPage />} />
-                <Route path={ValidRoutes.LOGIN} element={<LoginPage />} />
+                <Route element={<ProtectedRoute authToken={token}/>} >
+                    <Route index element={<AllImages imageData={imageData} imageDataLoading={imageDataLoading} imageDataError={imageDataError} searchPanel={searchPanel}/>} />
+                    <Route path={ValidRoutes.IMAGES} element={<ImageDetails token={token} imageData={imageData} imageDataLoading={imageDataLoading} imageDataError={imageDataError} updateImageName={updateImageName}/>} />
+                    <Route path={ValidRoutes.UPLOAD} element={<UploadPage />} />
+                </Route>
+                <Route path={ValidRoutes.LOGIN} element={<LoginPage isRegistering={false} setToken={updateToken}/>} />
+                <Route path={ValidRoutes.REGISTER} element={<LoginPage isRegistering={true} setToken={updateToken}/>} />
             </Route>
         </Routes>
     )

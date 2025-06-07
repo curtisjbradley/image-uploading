@@ -4,6 +4,7 @@ interface INameEditorProps {
     initialValue: string;
     imageId: string;
     handleUpdate: (id: string, newName: string) => void;
+    token: string
 }
 
 export function ImageNameEditor(props: Readonly<INameEditorProps>) {
@@ -15,7 +16,7 @@ export function ImageNameEditor(props: Readonly<INameEditorProps>) {
 
     async function handleSubmitPressed() {
         setUpdating(true);
-        await fetch(`/api/images/${props.imageId}`, {method: "PUT", headers: {"Content-Type": "application/json"}, body: JSON.stringify({name: input})}).then(res => {
+        await fetch(`/api/images/${props.imageId}`, {method: "PUT", headers: {"Content-Type": "application/json", "Authorization": `Bearer ${props.token}`}, body: JSON.stringify({name: input})}).then(res => {
             if(!res.ok) {
                 setErrored(true);
                 return;

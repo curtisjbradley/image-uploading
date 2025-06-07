@@ -49,4 +49,8 @@ export class ImageProvider {
         console.log("Update image name", id, newName);
         return this.imageCollection.updateOne({_id: new ObjectId(id)}, {$set: {name: newName}})
     }
+
+    getOwner(imageId: string) {
+        return this.imageCollection.findOne({_id: new ObjectId(imageId)}).then(image => image?.authorId)
+    }
 }
